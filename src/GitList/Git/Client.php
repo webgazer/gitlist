@@ -8,21 +8,52 @@ class Client extends BaseClient
 {
     protected $defaultBranch;
     protected $hidden;
+    protected $case_insensitive_url;
 
     public function __construct($options = null)
     {
         parent::__construct($options['path']);
         $this->setDefaultBranch($options['default_branch']);
         $this->setHidden($options['hidden']);
+        $this->case_insensitive_url = $options['case_insensitive_url'];
     }
 
     public function getRepositoryFromName($paths, $repo)
     {
         $repositories = $this->getRepositories($paths);
         $path = $repositories[$repo]['path'];
-
+       if($this->case_insensitive_url == true){  
+         foreach ($repositories as $key => $value) {
+           if (strcasecmp($key, $repo) == 0)
+           {
+              $path = $repositories[$key]['path'];
+              break;
+            }
+         }
+       }
         return $this->getRepository($path);
     }
+
+   
+   /** get the true repository name
+    * added by wisdom where repo name in url is case insensitive
+    * @return the true repo name
+    */
+    public function getRepoNameFromName($paths, $repo)
+    {
+        $repositories = $this->getRepositories($paths);
+        $truename = $repo;
+
+        foreach ($repositories as $key => $value) {
+           if (strcasecmp($key, $repo) == 0)
+           {
+              $truename = $key;
+              break;
+            }
+        }
+        return $truename;
+    }
+
 
     /**
      * Searches for valid repositories on the specified path

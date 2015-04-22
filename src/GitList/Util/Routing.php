@@ -4,7 +4,6 @@ namespace GitList\Util;
 
 use Silex\Application;
 use GitList\Exception\EmptyRepositoryException;
-
 class Routing
 {
     protected $app;
@@ -130,6 +129,7 @@ class Routing
             );
 
             $regex = implode('|', $quotedPaths);
+            $regex = ($this->app['case_insensitive_url'] == false) ? $regex :  "(?i)" . $regex ;
         }
 
         return $regex;
